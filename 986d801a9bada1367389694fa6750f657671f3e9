@@ -1,0 +1,37 @@
+skills/code-review/references/test-analyzer.md
+  65d153130ce4da73 1-130
+skills/code-review/SKILL.md
+  65d153130ce4da73 1-154
+skills/code-review/references/silent-failure-hunter.md
+  65d153130ce4da73 1-132
+skills/code-review/references/type-design-analyzer.md
+  65d153130ce4da73 1-132
+skills/code-review/references/comment-analyzer.md
+  65d153130ce4da73 1-114
+.claude-plugin/marketplace.json
+  65d153130ce4da73 20
+skills/code-review/references/code-simplifier.md
+  65d153130ce4da73 1-77
+skills/code-review/references/code-reviewer.md
+  65d153130ce4da73 1-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.22",
+  "base_commit_sha": "986d801a9bada1367389694fa6750f657671f3e9",
+  "prompts": {
+    "65d153130ce4da73": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc2a4faf-cc45-4b86-8b46-84601ca8e8d8",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "harrismcc <git@harrismccullers.com>",
+      "messages": [],
+      "total_additions": 804,
+      "total_deletions": 0,
+      "accepted_lines": 804,
+      "overriden_lines": 0
+    }
+  }
+}
