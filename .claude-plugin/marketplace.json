@@ -16,7 +16,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/ab-test-setup",
+        "./skills/pr-spring-cleaning",
+        "./skills/code-review"
       ]
     }
   ]
