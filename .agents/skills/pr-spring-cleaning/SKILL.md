@@ -20,9 +20,7 @@ Interactively triage all open PRs for a user on a given GitHub repo. Walk throug
 
 Run the fetch-and-summarize script. If the user doesn't specify a repo, ask them which repo to target.
 
-```bash
-bun scripts/fetch-and-summarize.ts <REPO>
-```
+**`scripts/fetch-and-summarize.ts`** - Run using bun
 
 The script outputs:
 - A **summary** with total counts, drafts vs ready, oldest, and most recently updated
