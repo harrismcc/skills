@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "pr-spring-cleaning": {
+      "source": "/Users/harris/Documents/skills",
+      "sourceType": "local",
+      "computedHash": "6bf2bc79a29b62576ba6818a63a7cd118623be097a323ffb6ae7f8765f473fee"
+    }
+  }
+}
