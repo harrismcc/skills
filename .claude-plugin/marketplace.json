@@ -1,0 +1,23 @@
+{
+  "name": "harris-skills",
+  "owner": {
+    "name": "Harris McCullers",
+    "url": "https://harrismccullers.com"
+  },
+  "metadata": {
+    "description": "Personal skills for Harris McCullers",
+    "version": "1.0.0",
+    "repository": "https://github.com/harrismcc/skills"
+  },
+  "plugins": [
+    {
+      "name": "harris-skills",
+      "description": "Personal skills for Harris McCullers",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/ab-test-setup",
+      ]
+    }
+  ]
+}
