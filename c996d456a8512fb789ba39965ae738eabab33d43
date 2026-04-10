@@ -1,0 +1,25 @@
+skills/writing-plans/SKILL.md
+  163a9ba0b84fcee0 16,50,132,134,136,138
+skills/brainstorming/SKILL.md
+  163a9ba0b84fcee0 22,25,28,31,45-46,48,57-58,62,107,124,128,130-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "c996d456a8512fb789ba39965ae738eabab33d43",
+  "prompts": {
+    "163a9ba0b84fcee0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "239f23bb-f0a5-4920-8590-ae4576f6583e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 27,
+      "total_deletions": 63,
+      "accepted_lines": 23,
+      "overriden_lines": 0
+    }
+  }
+}
