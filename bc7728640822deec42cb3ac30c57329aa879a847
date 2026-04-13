@@ -1,0 +1,23 @@
+skills/bug-fix-loop/SKILL.md
+  2a69bcb1fd867b7d 1-85,87-285
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "bc7728640822deec42cb3ac30c57329aa879a847",
+  "prompts": {
+    "2a69bcb1fd867b7d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2641d7e7-5d7a-4534-a4e5-ba1884f91a58",
+        "model": "custom:GPT-5.4-3"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 350,
+      "total_deletions": 65,
+      "accepted_lines": 284,
+      "overriden_lines": 1
+    }
+  }
+}
