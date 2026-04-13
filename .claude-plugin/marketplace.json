@@ -19,7 +19,8 @@
         "./skills/pr-spring-cleaning",
         "./skills/code-review",
         "./skills/brainstorming",
-        "./skills/writing-plans"
+        "./skills/writing-plans",
+        "./skills/bug-fix-loop"
       ]
     }
   ]

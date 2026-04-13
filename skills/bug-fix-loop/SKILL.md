@@ -167,40 +167,8 @@ Blind retries are forbidden.
 
 Use the `worker` custom droid for both verifier and worker tasks. Keep prompts role-specific and include only the minimum context needed.
 
-### Verifier prompt template
-
-```text
-Role: verifier
-Goal: Turn the current bug hypothesis into failing evidence, or explain why it cannot be reproduced.
-
-Provide:
-- failing test or explicit reproduction steps
-- exact commands run
-- observed output
-- explanation mapping evidence to the bug
-- caveats or confidence level
-
-Constraints:
-- Do not implement the fix
-- Do not assume knowledge of any worker task
-```
-
-### Worker prompt template
-
-```text
-Role: worker
-Goal: Implement the minimal fix for the verified failing evidence.
-
-Provide:
-- files changed
-- implementation summary
-- assumptions
-- risks or unresolved uncertainty
-
-Constraints:
-- Do not run broad exploratory work unrelated to the failing evidence
-- Do not assume knowledge of verifier internals beyond the provided artifact
-```
+- For verifier dispatch, read `references/verifier-prompt.md`
+- For worker dispatch, read `references/worker-prompt.md`
 
 ## Output Templates
 
