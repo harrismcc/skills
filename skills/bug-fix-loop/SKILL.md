@@ -18,6 +18,7 @@ Run a strict failing-evidence-first bug-fix loop through a single orchestrator. 
 Progress:
 - [ ] Create `/tmp/bug-fix-loop/<run-id>/`
 - [ ] Initialize `state.json`
+- [ ] Research the codebase before proposing any hypothesis
 - [ ] Write the current hypothesis to `iterations/NN.md`
 - [ ] Get failing evidence before implementation
 - [ ] Apply the minimal fix
@@ -39,6 +40,7 @@ Progress:
 
 - Do not keep verifier notes, fix notes, and validation notes in separate files for the same theory; append them to the same `iterations/NN.md`.
 - Do not overwrite a previous iteration file when a theory fails; create the next numbered file.
+- Do not form a hypothesis from the bug report alone; inspect the relevant code paths first.
 - Do not ask the worker to explore broadly; pass only the verified failing evidence and target scope.
 - Do not retry with the same hypothesis phrased differently; explicitly record what changed.
 - Do not commit just because the worker claims the fix is done; require verifier confirmation after the change.
@@ -87,13 +89,15 @@ Default retry budget: `max_iterations = 10`
 
 ## Procedure
 
-### 1. Diagnose
+### 1. Research
 
-- Inspect the bug report, repo context, and nearby code
+- Inspect the bug report, repo context, and nearby code before proposing any theory
+- Read the relevant files and search for the specific code paths, components, or tests involved
+- Identify the likely execution path, existing tests, and the most relevant files
 - Form a concrete root-cause hypothesis
-- Identify likely target files or behavior to reproduce
 - Create `/tmp/bug-fix-loop/<run-id>/state.json`
 - Create the next `iterations/NN.md` file before dispatching verification
+- Record the codebase findings in the iteration file before the hypothesis section
 
 Update `state.json` to:
 
@@ -106,6 +110,20 @@ Update `state.json` to:
   "current_iteration_file": "/tmp/bug-fix-loop/<run-id>/iterations/01.md",
   "result": null
 }
+```
+
+The first iteration file should begin with:
+
+```md
+# Iteration 01
+
+## Codebase Research
+- relevant files inspected
+- likely execution path
+- existing tests or missing coverage
+
+## Hypothesis
+Root-cause theory here.
 ```
 
 ### 2. Reproduce
@@ -176,6 +194,11 @@ Each `iterations/NN.md` file should use this structure:
 
 ```md
 # Iteration 01
+
+## Codebase Research
+- relevant files inspected
+- likely execution path
+- existing tests or missing coverage
 
 ## Hypothesis
 Root-cause theory here.
