@@ -1,0 +1,27 @@
+skills/bug-fix-loop/SKILL.md
+  2a69bcb1fd867b7d 170-171
+skills/bug-fix-loop/references/verifier-prompt.md
+  2a69bcb1fd867b7d 1-19
+skills/bug-fix-loop/references/worker-prompt.md
+  2a69bcb1fd867b7d 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "dfbc815649318cc57dc470e66cc3c57ff4380fff",
+  "prompts": {
+    "2a69bcb1fd867b7d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2641d7e7-5d7a-4534-a4e5-ba1884f91a58",
+        "model": "custom:GPT-5.4-3"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 39,
+      "total_deletions": 34,
+      "accepted_lines": 39,
+      "overriden_lines": 0
+    }
+  }
+}
