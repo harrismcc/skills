@@ -1,0 +1,42 @@
+README.md
+  f0a745b60f77e978 1-33
+hooks/detect-premature-stop.sh
+  ed5c107500f56677 1-33
+hooks/hooks.json
+  ed5c107500f56677 1-16
+.claude-plugin/plugin.json
+  ed5c107500f56677 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "f325111e95d008297f98b1a94b26b650e6a6a37d",
+  "prompts": {
+    "ed5c107500f56677": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "96bb924b-ba41-4b18-aca1-2f382841f920",
+        "model": "custom:CC:-Claude-Opus-4.6-Thinking-Medium-0"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 69,
+      "total_deletions": 14,
+      "accepted_lines": 55,
+      "overriden_lines": 0
+    },
+    "f0a745b60f77e978": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cd8af9bd-78db-40ee-8852-89aaf1111127",
+        "model": "custom:CC:-Claude-Opus-4.6-Thinking-Medium-0"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 134,
+      "total_deletions": 101,
+      "accepted_lines": 33,
+      "overriden_lines": 0
+    }
+  }
+}
