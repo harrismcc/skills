@@ -1,0 +1,42 @@
+.claude-plugin/marketplace.json
+  dc964f0992e58e86 23-28
+skills/bug-fix-loop/references/verifier-prompt.md
+  2a69bcb1fd867b7d 16-19
+skills/bug-fix-loop/SKILL.md
+  2a69bcb1fd867b7d 44-45,135-138,141-146,148,183,250
+skills/resolve-pr-comments/SKILL.md
+  dc964f0992e58e86 1-274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "8416eb0893ee4f0107875345208abcfc7ec71384",
+  "prompts": {
+    "2a69bcb1fd867b7d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2641d7e7-5d7a-4534-a4e5-ba1884f91a58",
+        "model": "custom:GPT-5.4-3"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 20,
+      "total_deletions": 1,
+      "accepted_lines": 20,
+      "overriden_lines": 0
+    },
+    "dc964f0992e58e86": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "1f0d95a9-7667-402c-9c77-43ca6fc70231",
+        "model": "custom:CC:-Claude-Opus-4.6-Thinking-Medium-0"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 375,
+      "total_deletions": 3,
+      "accepted_lines": 280,
+      "overriden_lines": 0
+    }
+  }
+}
