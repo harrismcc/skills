@@ -1,9 +1,9 @@
 ---
-name: resolve-pr-comments
+name: fix-pr-comments
 description: "Batch-resolve unresolved PR review comments with parallel fix/verify subagents. Use when the user wants to resolve, fix, or address all outstanding review comments on a GitHub PR."
 ---
 
-# Resolve PR Comments
+# Fix PR Comments
 
 Batch-resolve all unresolved PR review comments. Fetches threads, deduplicates, parallelizes fixes via subagents, verifies each fix, commits, pushes, and resolves GitHub threads.
 

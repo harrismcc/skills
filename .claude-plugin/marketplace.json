@@ -21,7 +21,7 @@
         "./skills/brainstorming",
         "./skills/writing-plans",
         "./skills/bug-fix-loop",
-        "./skills/resolve-pr-comments"
+        "./skills/fix-pr-comments"
       ],
       "agents": [
         "./agents/pr-comment-fixer.md",
