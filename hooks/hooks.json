@@ -1,0 +1,16 @@
+{
+  "description": "Detects when the agent stops prematurely after a tool call and kicks the agentic loop back on. Particularly useful with open source models that sometimes stop mid-task.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/detect-premature-stop.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
