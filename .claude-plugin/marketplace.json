@@ -20,7 +20,12 @@
         "./skills/code-review",
         "./skills/brainstorming",
         "./skills/writing-plans",
-        "./skills/bug-fix-loop"
+        "./skills/bug-fix-loop",
+        "./skills/resolve-pr-comments"
+      ],
+      "agents": [
+        "./agents/pr-comment-fixer.md",
+        "./agents/pr-comment-verifier.md"
       ]
     }
   ]

@@ -41,6 +41,8 @@ Progress:
 - Do not keep verifier notes, fix notes, and validation notes in separate files for the same theory; append them to the same `iterations/NN.md`.
 - Do not overwrite a previous iteration file when a theory fails; create the next numbered file.
 - Do not form a hypothesis from the bug report alone; inspect the relevant code paths first.
+- Do not stop after one weak reproduction attempt; try adjacent code paths, existing tests, and alternate repro strategies before declaring blocked.
+- Do not assume the current test harness is sufficient; if needed, extend fixtures, helpers, mocks, or test-only dependencies to create credible failing evidence.
 - Do not ask the worker to explore broadly; pass only the verified failing evidence and target scope.
 - Do not retry with the same hypothesis phrased differently; explicitly record what changed.
 - Do not commit just because the worker claims the fix is done; require verifier confirmation after the change.
@@ -130,10 +132,20 @@ Root-cause theory here.
 
 - Dispatch the `worker` droid in verifier mode
 - Ask it to add or update a failing test, or provide explicit reproduction steps
+- Allow it to make targeted test-harness changes when necessary, including:
+  - adding test fixtures, helpers, or mocks
+  - extending test utilities or setup files
+  - adding narrowly scoped test-only dependencies already justified by the repro need
 - Append the failing evidence to the current `iterations/NN.md`
 - Update `state.json` to `reproducing`
+- If the first repro attempt fails, do a deeper pass before giving up:
+  - inspect adjacent code paths and related tests
+  - try a second reproduction strategy
+  - improve the test harness if missing infrastructure is the blocker
+  - tighten or revise the hypothesis based on what was learned
+  - record each failed repro attempt in the iteration file
 
-If the verifier cannot reproduce the issue, refine the hypothesis or stop as blocked.
+Only stop as blocked when repeated reproduction attempts still do not produce credible failing evidence and there is no stronger next hypothesis.
 
 ### 3. Fix
 
@@ -168,6 +180,7 @@ Retries are valid only when supported by new evidence.
 Valid retry triggers:
 
 - reproduced failure only partially matches the bug report
+- initial reproduction attempt failed, but codebase research suggests a more precise theory
 - worker fixed the wrong root cause
 - validation exposes a clearer failure mode
 - previous instructions were underspecified
@@ -233,6 +246,8 @@ What must change before another iteration, if any.
 ```
 
 Keep verifier, fix, and validation notes together in that single file for the iteration.
+
+If reproduction required harness work, include that in `## Failing Evidence` before moving on to implementation.
 
 ## Termination Conditions
 
