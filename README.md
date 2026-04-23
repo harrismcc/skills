@@ -2,6 +2,11 @@
 
 Personal Claude plugin with skills, agents, and hooks for development workflows.
 
+[Claude Code Plugin Docs](https://code.claude.com/docs/en/plugins)
+[Claude Code Plugin Reference](https://code.claude.com/docs/en/plugins-reference)
+
+[Factory Droid Plugin Docs](https://docs.factory.ai/guides/building/building-plugins)
+
 ## Skills
 
 - **brainstorming** — Explore intent, requirements, and design before implementation
