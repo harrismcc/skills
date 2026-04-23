@@ -21,7 +21,7 @@ flowchart LR
     GenVerify --> WriteJSON["Write\n/tmp/pr-number/comments.json"]
     WriteJSON --> Parallelize["Group comments:\nparallel (different files)\nvs serial (same files)"]
     Parallelize --> DispatchFixer["Dispatch\npr-comment-fixer\nsubagent(s)"]
-    DispatchFixer --> DispatchVerifier["Dispatch\npr-comment-verifier\nsubagent"]
+    DispatchFixer --> DispatchVerifier["Dispatch\npr-comment-verifier\nsubagents (parallel)"]
     DispatchVerifier --> Verified{"Fix verified?"}
     Verified -- Yes --> Commit["Verifier commits fix"]
     Commit --> UpdateJSON["Update comments.json\naddressed + isVerified"]
@@ -180,7 +180,7 @@ Use the `pr-comment-fixer` agent (located at `agents/pr-comment-fixer.md` relati
 
 ### Step 6: Verify and Commit
 
-After each fixer completes, dispatch the `pr-comment-verifier` agent using the Task tool:
+After each batch of fixers completes, dispatch `pr-comment-verifier` agents **in parallel** u2014 one per completed fix u2014 by issuing multiple Task tool calls in a single message. Verifiers for different comments are independent and must not be serialized.
 
 **Verifier prompt template:**
 ```
@@ -197,6 +197,11 @@ Fixer's change summary:
 ```
 
 Use the `pr-comment-verifier` agent (located at `agents/pr-comment-verifier.md` relative to the plugin root).
+
+**Parallelization rules:**
+- Dispatch all verifiers for a batch of completed fixes concurrently (multiple Task calls in one message).
+- Same-file comments are already serialized at the fixer stage, so their verifiers are naturally dispatched in sequence as each fix completes u2014 but verifiers for different files always run in parallel.
+- Each verifier commits independently; git handles concurrent commits on the same branch via sequential staging within each verifier subagent.
 
 **Handle verifier results:**
 - **Verified (committed):** Update `comments.json` u2014 set `addressed: true` and `isVerified: true` for that entry. Proceed to the next comment.
