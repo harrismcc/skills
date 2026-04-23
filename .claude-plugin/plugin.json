@@ -1,6 +1,0 @@
-{
-  "name": "harris-skills",
-  "version": "1.1.0",
-  "description": "Personal skills for Harris McCullers",
-  "hooks": "./hooks/hooks.json"
-}
