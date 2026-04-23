@@ -1,0 +1,21 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "ec6a3e2bf2a4ff6561cc6ab24d43e67d6f58243f",
+  "prompts": {
+    "ed5c107500f56677": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "96bb924b-ba41-4b18-aca1-2f382841f920",
+        "model": "custom:CC:-Claude-Opus-4.6-Thinking-Medium-0"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 58,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  }
+}
