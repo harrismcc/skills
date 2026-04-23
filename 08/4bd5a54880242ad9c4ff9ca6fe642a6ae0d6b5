@@ -1,0 +1,23 @@
+skills/resolve-pr-comments/SKILL.md
+  cfbf4cc1e263b4e6 24,183,201-204
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "084bd5a54880242ad9c4ff9ca6fe642a6ae0d6b5",
+  "prompts": {
+    "cfbf4cc1e263b4e6": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "983a96ef-9f71-4f60-ac4c-467be75e8c3f",
+        "model": "custom:CC:-Claude-Opus-4.7"
+      },
+      "human_author": "harrismcc",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 2,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
