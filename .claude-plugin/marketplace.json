@@ -26,7 +26,8 @@
       ],
       "agents": [
         "./agents/pr-comment-fixer.md",
-        "./agents/pr-comment-verifier.md"
+        "./agents/pr-comment-verifier.md",
+        "./agents/pr-comment-triager.md"
       ]
     }
   ]

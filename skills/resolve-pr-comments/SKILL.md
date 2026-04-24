@@ -16,10 +16,14 @@ flowchart LR
     Fetch --> Dedupe["Dedupe logically\nidentical comments"]
     Dedupe --> Conflicts{"Any comments\nconflict?"}
     Conflicts -- Yes --> AskUser["Flag conflicts,\nask user to resolve"]
-    AskUser --> GenVerify
-    Conflicts -- No --> GenVerify["Generate verification\nsteps for each comment"]
+    AskUser --> Triage
+    Conflicts -- No --> Triage["Dispatch\npr-comment-triager\n(category + severity +\nrationale + fix/skip rec)"]
+    Triage --> SkipReview{"Any skip\nrecommendations?"}
+    SkipReview -- Yes --> ConfirmSkip["Ask user per-comment:\napprove skip or reject"]
+    ConfirmSkip --> GenVerify
+    SkipReview -- No --> GenVerify["Generate verification\nsteps for non-skipped\ncomments"]
     GenVerify --> WriteJSON["Write\n/tmp/pr-number/comments.json"]
-    WriteJSON --> Parallelize["Group comments:\nparallel (different files)\nvs serial (same files)"]
+    WriteJSON --> Parallelize["Group non-skipped\ncomments: parallel (different\nfiles) vs serial (same files)"]
     Parallelize --> DispatchFixer["Dispatch\npr-comment-fixer\nsubagent(s)"]
     DispatchFixer --> DispatchVerifier["Dispatch\npr-comment-verifier\nsubagents (parallel)"]
     DispatchVerifier --> Verified{"Fix verified?"}
@@ -30,7 +34,7 @@ flowchart LR
     MoreComments -- No --> Push["git push\n(all commits at once)"]
     Verified -- No --> RetryFixer["Dispatch new fixer\nwith verifier feedback"]
     RetryFixer --> DispatchVerifier
-    Push --> ResolveThreads["Resolve each GitHub\nthread via GraphQL\nresolveReviewThread mutation"]
+    Push --> ResolveThreads["Fixed: resolveReviewThread\nSkipped: post reply with\nskipReason (leave unresolved)"]
     ResolveThreads --> Done(["Done"])
 ```
 
@@ -120,9 +124,45 @@ For each unresolved thread, extract:
 2. Ask the user to pick a direction for each conflict
 3. Only proceed after the user resolves all conflicts
 
-### Step 4: Generate Verification Steps and Write comments.json
+### Step 4: Triage Comments
 
-For each deduplicated comment, generate `verificationSteps` u2014 freeform markdown describing what must be true for the fix to be correct. These should be conceptual ("ensure null inputs are handled gracefully") not prescriptive ("run `npm test`"). The verifier decides how to check.
+Dispatch the `pr-comment-triager` agent (located at `agents/pr-comment-triager.md` relative to the plugin root) **once** with the full deduplicated list. The triager assesses each comment with a critical lens and returns a structured triage per comment.
+
+**Triager prompt template:**
+```
+Triage this batch of PR review comments.
+
+PR: <title>
+<optional PR description>
+
+Comments (JSON):
+<deduplicated array with id, text, filePath, githubLinks, threadIds>
+
+Apply a critical lens. For each comment return:
+- category (BUG | BEHAVIOR | STYLE | ERROR_HANDLING | TESTS)
+- severity (P0 | P1 | P2 | P3)
+- rationale (short critical assessment)
+- recommendation (fix | skip)
+- skipReason (reply-ready text if skipping, else null)
+
+Return the JSON array only.
+```
+
+Merge the triager's output into each comment entry (match by `id`). Then handle skip recommendations:
+
+1. Filter entries where `recommendation === "skip"`.
+2. For each skip candidate, **present it to the user one at a time** using `AskUser` with a binary choice:
+   - Include: comment text, file path, rationale, and the proposed reply (`skipReason`).
+   - Options: `Approve skip` / `Reject - fix it`.
+3. Apply the user's decision:
+   - **Approve skip** → set `skipped: true`, keep `skipReason`.
+   - **Reject** → set `skipped: false`, `recommendation: "fix"`, `skipReason: null`.
+
+Non-skip comments pass through unchanged.
+
+### Step 5: Generate Verification Steps and Write comments.json
+
+For each **non-skipped** comment, generate `verificationSteps` u2014 freeform markdown describing what must be true for the fix to be correct. These should be conceptual ("ensure null inputs are handled gracefully") not prescriptive ("run `npm test`"). The verifier decides how to check.
 
 Write the data to `/tmp/<pr-number>/comments.json`:
 
@@ -136,6 +176,13 @@ Write the data to `/tmp/<pr-number>/comments.json`:
     ],
     "threadIds": ["PRRT_abc123"],
     "filePath": "src/utils.ts",
+    "category": "ERROR_HANDLING",
+    "severity": "P1",
+    "rationale": "Null input currently throws in the happy path; reviewer is correct and the fix is low-risk.",
+    "recommendation": "fix",
+    "skipped": false,
+    "skipReason": null,
+    "replyPosted": false,
     "addressed": false,
     "verificationSteps": "Ensure the function gracefully handles null/undefined input without throwing. Existing tests should still pass.",
     "isVerified": false
@@ -143,18 +190,22 @@ Write the data to `/tmp/<pr-number>/comments.json`:
 ]
 ```
 
+Skipped entries have the same shape but with `skipped: true`, `skipReason` populated, and no `verificationSteps` (or `null`). They are not touched by fixers.
+
 Create the `/tmp/<pr-number>/` directory first:
 ```bash
 mkdir -p /tmp/<pr-number>
 ```
 
-### Step 5: Group and Dispatch Fixers
+### Step 6: Group and Dispatch Fixers
+
+**Only dispatch fixers for entries where `skipped !== true`.** Skipped entries are handled in Step 9.
 
 Analyze `comments.json` to determine parallelization:
 - **Different files**: Comments touching different files can be fixed in parallel
 - **Same file**: Comments on the same file must be serialized (wait for full fix u2192 verify u2192 commit cycle before dispatching the next fixer for that file)
 
-For each comment (or parallel batch), dispatch the `pr-comment-fixer` agent using the Task tool:
+For each comment (or parallel batch), dispatch the `pr-comment-fixer` agent using the Task tool. Fixers do not receive `category` / `severity` / `rationale` — that metadata is not part of the fixer prompt.
 
 **Fixer prompt template:**
 ```
@@ -178,7 +229,7 @@ Address the specific issues raised by the verifier.
 
 Use the `pr-comment-fixer` agent (located at `agents/pr-comment-fixer.md` relative to the plugin root).
 
-### Step 6: Verify and Commit
+### Step 7: Verify and Commit
 
 After each batch of fixers completes, dispatch `pr-comment-verifier` agents **in parallel** u2014 one per completed fix u2014 by issuing multiple Task tool calls in a single message. Verifiers for different comments are independent and must not be serialized.
 
@@ -207,9 +258,9 @@ Use the `pr-comment-verifier` agent (located at `agents/pr-comment-verifier.md` 
 - **Verified (committed):** Update `comments.json` u2014 set `addressed: true` and `isVerified: true` for that entry. Proceed to the next comment.
 - **Not verified:** Dispatch a new fixer with the verifier's feedback appended to the prompt. There is no retry limit u2014 continue until the fix is verified or the user intervenes.
 
-### Step 7: Push
+### Step 8: Push
 
-After all comments in `comments.json` have `addressed: true` and `isVerified: true`:
+After all **non-skipped** comments in `comments.json` have `addressed: true` and `isVerified: true`:
 
 ```bash
 git push
@@ -220,9 +271,13 @@ Do NOT force push. If the push fails due to remote changes, pull and rebase firs
 git pull --rebase && git push
 ```
 
-### Step 8: Resolve GitHub Threads
+### Step 9: Handle GitHub Threads
 
-For each verified entry in `comments.json`, resolve all associated GitHub threads using the GraphQL mutation:
+Two paths, based on the entry's disposition:
+
+**A. Fixed comments** (`skipped: false`, `isVerified: true`)
+
+Resolve all associated GitHub threads using the `resolveReviewThread` mutation:
 
 ```bash
 gh api graphql -f query='
@@ -238,13 +293,36 @@ mutation {
 
 Iterate through all `threadIds` for each entry and resolve them one by one.
 
-**IMPORTANT:** This is specifically the `resolveReviewThread` mutation u2014 marking the thread as resolved/collapsed in GitHub. Do NOT post comments, do NOT add reactions, do NOT reply to threads. The `resolveReviewThread` mutation only. No fallback to commenting is allowed.
+**B. Skipped comments** (`skipped: true`)
 
-### Step 9: Report
+For each `threadId`, post the `skipReason` as a reply using `addPullRequestReviewThreadReply`. The thread is **left unresolved** so the reviewer can respond and close it themselves.
+
+```bash
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "THREAD_ID",
+    body: "SKIP_REASON"
+  }) {
+    comment {
+      id
+    }
+  }
+}
+'
+```
+
+After posting, set `replyPosted: true` on the entry. Do NOT call `resolveReviewThread` for skipped entries.
+
+**IMPORTANT:** For fixed comments, only use `resolveReviewThread` — no comments, no reactions, no replies. For skipped comments, only post one reply per thread and do not resolve. No other mutations are allowed.
+
+### Step 10: Report
 
 Output a summary:
 - Total comments found
-- Comments resolved (with brief descriptions)
+- Category and severity breakdown
+- Comments fixed (with brief descriptions)
+- Comments skipped (with rationale and confirmation that a reply was posted)
 - Comments that required retries (and how many)
 - Any comments that remain unresolved (and why)
 - Link to the PR
@@ -272,8 +350,13 @@ This workflow is idempotent:
 - Do not proceed if the working tree is dirty. Always check first.
 - Do not skip the deduplication step, even if there's only one reviewer.
 - Do not merge comments that are on the same file/line but about different issues.
+- Do not skip the triage step. Every comment must be triaged before fixing.
+- Do not auto-skip a comment without explicit user approval. Present each skip candidate one at a time.
+- Do not pass triage metadata (category, severity, rationale) into fixer prompts. It is metadata only.
+- Do not dispatch fixers for entries where `skipped === true`.
 - Do not let fixers commit. Only verifiers commit.
-- Do not push until ALL comments are addressed.
-- Do not post comments or reactions on GitHub threads. Only use `resolveReviewThread`.
+- Do not push until all non-skipped comments are addressed.
+- For fixed comments, only use `resolveReviewThread`. No comments, no reactions.
+- For skipped comments, post exactly one reply per thread using `addPullRequestReviewThreadReply` and do NOT resolve the thread.
 - For same-file comments, do not dispatch a second fixer until the first fixer's changes are verified and committed.
-- If `gh api graphql` fails for thread resolution, report the error but do not fall back to any other mechanism.
+- If `gh api graphql` fails for thread resolution or reply, report the error but do not fall back to any other mechanism.
