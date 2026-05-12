@@ -1,0 +1,23 @@
+skills/resolve-pr-comments/SKILL.md
+  s_4fda2fa341e53e::t_ab938d7985ecf6 147,157
+  s_4fda2fa341e53e::t_2d0a6ee81e7d08 165-166,189,198,303,320-322,324,333
+agents/pr-comment-triager.md
+  s_4fda2fa341e53e::t_99854669ecf599 35,48
+  s_4fda2fa341e53e::t_81c22c571b4a03 49,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "a04fbedb1dddbf10a7136aace526fe861cea0631",
+  "prompts": {},
+  "sessions": {
+    "s_4fda2fa341e53e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e832f954-89df-4538-a99f-508eeb51c4b0",
+        "model": "custom:GPT-5.5"
+      },
+      "human_author": "harrismcc <git@harrismccullers.com>"
+    }
+  }
+}
