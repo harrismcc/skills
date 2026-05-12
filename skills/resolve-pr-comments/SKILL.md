@@ -144,6 +144,7 @@ Apply a critical lens. For each comment return:
 - rationale (short critical assessment)
 - recommendation (fix | skip)
 - skipReason (reply-ready text if skipping, else null)
+- resolveWhenSkipped (true only if skipped thread should be resolved because it is duplicate, already fixed, superseded, or otherwise no longer actionable; false otherwise)
 
 Return the JSON array only.
 ```
@@ -153,12 +154,15 @@ Merge the triager's output into each comment entry (match by `id`). Then handle 
 1. Filter entries where `recommendation === "skip"`.
 2. For each skip candidate, **present it to the user one at a time** using `AskUser` with a binary choice:
    - Include: comment text, file path, rationale, and the proposed reply (`skipReason`).
+   - Include whether the triager recommends resolving the thread after the reply (`resolveWhenSkipped`) and why.
    - Options: `Approve skip` / `Reject - fix it`.
 3. Apply the user's decision:
    - **Approve skip** → set `skipped: true`, keep `skipReason`.
    - **Reject** → set `skipped: false`, `recommendation: "fix"`, `skipReason: null`.
 
 Non-skip comments pass through unchanged.
+
+For skipped comments, also decide whether the thread should be resolved after replying. Set `resolveWhenSkipped: true` only when the comment is already fully addressed or no longer actionable (for example: duplicate of another fixed thread, already fixed in the current branch, superseded by nearby code, or factually invalid with clear evidence). Set `resolveWhenSkipped: false` when the reviewer should still confirm or respond (for example: subjective disagreement, scope disagreement, product/design decision, or ambiguous request).
 
 ### Step 5: Generate Verification Steps and Write comments.json
 
@@ -182,6 +186,7 @@ Write the data to `/tmp/<pr-number>/comments.json`:
     "recommendation": "fix",
     "skipped": false,
     "skipReason": null,
+    "resolveWhenSkipped": false,
     "replyPosted": false,
     "addressed": false,
     "verificationSteps": "Ensure the function gracefully handles null/undefined input without throwing. Existing tests should still pass.",
@@ -190,7 +195,7 @@ Write the data to `/tmp/<pr-number>/comments.json`:
 ]
 ```
 
-Skipped entries have the same shape but with `skipped: true`, `skipReason` populated, and no `verificationSteps` (or `null`). They are not touched by fixers.
+Skipped entries have the same shape but with `skipped: true`, `skipReason` populated, `resolveWhenSkipped` set according to whether the thread is appropriate to close, and no `verificationSteps` (or `null`). They are not touched by fixers.
 
 Create the `/tmp/<pr-number>/` directory first:
 ```bash
@@ -295,7 +300,7 @@ Iterate through all `threadIds` for each entry and resolve them one by one.
 
 **B. Skipped comments** (`skipped: true`)
 
-For each `threadId`, post the `skipReason` as a reply using `addPullRequestReviewThreadReply`. The thread is **left unresolved** so the reviewer can respond and close it themselves.
+For each `threadId`, post the `skipReason` as a reply using `addPullRequestReviewThreadReply`. By default, the thread is **left unresolved** so the reviewer can respond and close it themselves.
 
 ```bash
 gh api graphql -f query='
@@ -312,9 +317,11 @@ mutation {
 '
 ```
 
-After posting, set `replyPosted: true` on the entry. Do NOT call `resolveReviewThread` for skipped entries.
+After posting, set `replyPosted: true` on the entry.
 
-**IMPORTANT:** For fixed comments, only use `resolveReviewThread` — no comments, no reactions, no replies. For skipped comments, only post one reply per thread and do not resolve. No other mutations are allowed.
+Exception: if `resolveWhenSkipped: true`, resolve the thread after posting the reply. This is appropriate when the skip reason explains that the comment is a duplicate, already fixed, superseded, or otherwise fully addressed/no longer actionable. Use the same `resolveReviewThread` mutation as fixed comments, then set `addressed: true` for that entry.
+
+**IMPORTANT:** For fixed comments, only use `resolveReviewThread` — no comments, no reactions, no replies. For skipped comments, post exactly one reply per thread; additionally resolve only when `resolveWhenSkipped: true`. No other mutations are allowed.
 
 ### Step 10: Report
 
@@ -323,6 +330,7 @@ Output a summary:
 - Category and severity breakdown
 - Comments fixed (with brief descriptions)
 - Comments skipped (with rationale and confirmation that a reply was posted)
+- Skipped comments whose threads were resolved because they were duplicates, already fixed, superseded, or otherwise no longer actionable
 - Comments that required retries (and how many)
 - Any comments that remain unresolved (and why)
 - Link to the PR

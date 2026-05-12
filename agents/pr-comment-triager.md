@@ -32,6 +32,7 @@ For each comment:
 5. **Decide `recommendation`**: `fix` or `skip`.
    - Default to `fix`. Only recommend `skip` when you have a concrete, defensible reason (reviewer is factually wrong, request is out of scope, change would introduce a regression, comment is redundant with already-fixed code, etc.).
    - If you recommend `skip`, write a `skipReason` that is suitable to post as a GitHub reply. It should be professional, direct, and explain the reasoning — not dismissive.
+   - If you recommend `skip`, decide whether the thread should be resolved after the reply. Set `resolveWhenSkipped: true` only when the comment is already fully addressed or no longer actionable, such as a duplicate of another fixed thread, already fixed in the current branch, superseded by nearby code, or factually invalid with clear evidence. Set it to `false` when the reviewer should still confirm or respond, such as subjective disagreement, scope disagreement, product/design decision, or ambiguity.
 
 ## Schema
 
@@ -44,9 +45,12 @@ Return a JSON array. Each entry must match this shape exactly:
   "severity": "P0" | "P1" | "P2" | "P3",
   "rationale": "Short critical assessment of the comment and the code. 1-3 sentences.",
   "recommendation": "fix" | "skip",
-  "skipReason": "If recommendation is skip, a reply-ready explanation. Otherwise null."
+  "skipReason": "If recommendation is skip, a reply-ready explanation. Otherwise null.",
+  "resolveWhenSkipped": false
 }
 ```
+
+`resolveWhenSkipped` is a boolean: if `recommendation` is `skip`, set it to `true` only when the thread should be resolved after replying; otherwise set it to `false`.
 
 ### Category definitions
 
