@@ -1,0 +1,19 @@
+docs/specs/2026-05-14-brainstorming-combined-spec-plan.md
+  s_ce58060a4818ae::t_b1b325d0f436f0 1-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "85c1d5ea9398f96d09c6452a3fd1e2df661580c5",
+  "prompts": {},
+  "sessions": {
+    "s_ce58060a4818ae": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "aa70e971-f492-4d72-aaa6-fbe2124ba1ad",
+        "model": "custom:GPT-5.5"
+      },
+      "human_author": "harrismcc <git@harrismccullers.com>"
+    }
+  }
+}
