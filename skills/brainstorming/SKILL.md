@@ -5,7 +5,7 @@ description: "Use this skill ONLY when explicitly invoked with `/brainstorming` 
 
 # Brainstorming Ideas Into Designs
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+Help turn ideas into fully formed design-and-plan specs through natural collaborative dialogue.
 
 Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
 
@@ -25,10 +25,9 @@ You MUST create a todo list for these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/designs/YYYY-MM-DD-<topic>-design.md` and commit
-7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Write implementation plan** — create a step-by-step implementation plan and save to `docs/specs/YYYY-MM-DD-<topic>-plan.md`
+6. **Write combined spec-plan** — save to `docs/specs/YYYY-MM-DD-<topic>.md` and commit
+7. **Spec-plan self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
+8. **User reviews written spec-plan** — ask user to review the combined spec-plan file before considering brainstorming complete
 
 ## Process Flow
 
@@ -39,27 +38,25 @@ digraph brainstorming {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
-    "Spec self-review\n(fix inline)" [shape=box];
-    "User reviews spec?" [shape=diamond];
-    "Write implementation plan" [shape=box];
-    "Done:\nspec + plan committed" [shape=doublecircle];
+    "Write combined spec-plan" [shape=box];
+    "Spec-plan self-review\n(fix inline)" [shape=box];
+    "User reviews spec-plan?" [shape=diamond];
+    "Done:\ncombined spec-plan committed" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec?";
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Write implementation plan" [label="approved"];
-    "Write implementation plan" -> "Done:\nspec + plan committed";
+    "User approves design?" -> "Write combined spec-plan" [label="yes"];
+    "Write combined spec-plan" -> "Spec-plan self-review\n(fix inline)";
+    "Spec-plan self-review\n(fix inline)" -> "User reviews spec-plan?";
+    "User reviews spec-plan?" -> "Write combined spec-plan" [label="changes requested"];
+    "User reviews spec-plan?" -> "Done:\ncombined spec-plan committed" [label="approved"];
 }
 ```
 
-**The terminal state is having the design spec and implementation plan written, reviewed, and committed.** Do NOT start implementing. Brainstorming is done when the artifacts exist.
+**The terminal state is having one combined spec-plan written, reviewed, and committed.** Do NOT start implementing. Brainstorming is done when that artifact exists.
 
 ## The Process
 
@@ -67,7 +64,7 @@ digraph brainstorming {
 
 - Check out the current project state first (files, docs, recent commits)
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
-- If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
+- If the project is too large for a single spec-plan, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own combined spec-plan → implementation cycle.
 - For appropriately-scoped projects, ask questions one at a time to refine the idea
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
@@ -104,33 +101,46 @@ digraph brainstorming {
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/designs/YYYY-MM-DD-<topic>-design.md`
-  - (User preferences for spec location override this default)
-- Commit the design document to git
+- Write the validated design and step-by-step implementation plan to one combined spec-plan at `docs/specs/YYYY-MM-DD-<topic>.md`
+  - (User preferences for spec-plan location override this default)
+- Commit the combined spec-plan document to git
 
-**Spec Self-Review:**
-After writing the spec document, look at it with fresh eyes:
+The combined spec-plan should include:
+
+1. Purpose and goals
+2. Scope and non-goals
+3. Requirements and constraints
+4. Selected design
+5. Alternatives considered
+6. Architecture, components, and data flow where relevant
+7. Error handling and edge cases where relevant
+8. Testing and validation strategy
+9. Step-by-step implementation plan
+10. Acceptance criteria
+
+Sections may be concise for small changes, but the file should still be complete enough to guide implementation without another planning artifact.
+
+**Spec-Plan Self-Review:**
+After writing the combined spec-plan document, look at it with fresh eyes:
 
 1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague requirements? Fix them.
-2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
-3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
+2. **Internal consistency:** Do any sections contradict each other? Does the design match the implementation plan?
+3. **Scope check:** Is this focused enough for a single combined spec-plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
 **User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
+After the self-review loop passes, ask the user to review the written combined spec-plan before considering brainstorming complete:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before I write the implementation plan."
+> "Combined spec-plan written and committed to `<path>`. Please review it and let me know if you want to make any changes."
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+Wait for the user's response. If they request changes, make them in the same file and re-run the self-review loop. Do not create a second implementation plan document as a fallback.
 
-**Implementation Plan:**
+**Terminal State:**
 
-- Write a detailed, step-by-step implementation plan based on the approved spec
-- Save to `docs/specs/YYYY-MM-DD-<topic>-plan.md` and commit
-- The plan should break the work into ordered steps with clear scope, dependencies, and acceptance criteria
-- Brainstorming is complete once both the spec and plan are committed
+- Brainstorming is complete once the combined spec-plan is written, reviewed, and committed
+- Do not start implementation during brainstorming unless the user explicitly leaves the brainstorming flow and asks for implementation after approving the committed combined spec-plan
 
 ## Key Principles
 
