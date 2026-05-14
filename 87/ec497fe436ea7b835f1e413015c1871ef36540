@@ -1,0 +1,19 @@
+skills/brainstorming/SKILL.md
+  s_559264b3952a60::t_a5f9e43eb21a44 8,28-30,41-44,51-55,59,67,104-106,108-124,127-128,134,136,138,140,142-143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "87ec497fe436ea7b835f1e413015c1871ef36540",
+  "prompts": {},
+  "sessions": {
+    "s_559264b3952a60": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4e45a7a7-2b74-4793-986a-87117fdc5d32",
+        "model": "custom:GPT-5.5"
+      },
+      "human_author": "harrismcc <git@harrismccullers.com>"
+    }
+  }
+}
